@@ -6,8 +6,8 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 user = User.create(
-  :email => "user@example.com",
-  :password => "password",
+  :email => ENV["APP_PERF_USER_EMAIL"],
+  :password => ENV["APP_PERF_USER_PASSWORD"],
   :license_key => ENV["APP_PERF_LICENSE_KEY"]
 )
 application = user.applications.create(:name => "App Perf")
