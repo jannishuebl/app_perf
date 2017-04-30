@@ -1,0 +1,51 @@
+version: '2'
+services:
+
+  web:
+    build: .
+    expose: 
+        -   "3000"
+    depends_on:
+        - db
+        - redis
+    command: "bundle exec rails s -b '0.0.0.0' -p 3000"
+    environment: &environment
+        APP_PERF_HOST: web
+        APP_PERF_LICENSE_KEY: 19509de2-d07d-470f-a8f5-aab940569d8
+        APP_PERF_PORT: 3000
+        APP_PERF_SAMPLE_RATE: 20
+        DEFAULT_DATA_RETENTION_HOURS: 1
+        DATABASE_NAME: app_perf
+        DATABASE_HOST: db
+        DATABASE_PASSWORD: postgres
+        POSTGRES_PORT: 5432
+        DATABASE_USER: postgres
+        RAILS_ENV: production
+        RACK_ENV: production
+        REDIS_URL: redis://redis:6379
+        REDIS_PROVIDER: redis://redis:6379
+        SECRET_KEY_BASE: 325280a44fbbb0b7ad457a82a0487afbc21aa42fb58be2383e06f8dd8607fb2ad532bbc094863bb4989cc7faed4fee0e4814835aa357b026c17fd24920a5a771
+        RAILS_SERVE_STATIC_FILES: "true"
+
+    ports: 
+      - 5000:3000
+
+  setup: 
+    build: .
+    depends_on:
+        - db
+        - redis
+    command: "bundle exec rake db:setup"
+    environment: *environment
+
+  worker: 
+    build: .
+    depends_on:
+        - db
+        - redis
+    command: "bundle exec sidekiq"
+    environment: *environment
+  db:
+    image: postgres
+  redis:
+    image: redis
